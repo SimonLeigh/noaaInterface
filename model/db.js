@@ -197,7 +197,7 @@ function spatialQuery(coordinates, done){
     }
     else {
         // Set the query with BBOX coordinates and limit of 30 results for testing
-        sQuery.bbox(coordinates).limit(500);
+        sQuery.bbox(coordinates).limit(50);
         queryDB.query(sQuery,function(err,result){
             if (err) {
                 console.log("ERR:",err);
@@ -219,13 +219,13 @@ function spatialQuery(coordinates, done){
  * Date range in 2-array
  *
 ***********/
-function spatialQueryWithDates(coordinates, dates, done){
+function spatialQueryWithDates(coordinates, date, done){
 
     // Set the query up to query the view with (designdoc, viewname)
     var sQuery = couchbase.SpatialQuery.from("spatial","byLatLonDate");
     if(config.couchbase.showQuery){
         console.log("SPATIAL QUERY COORDS:", coordinates);
-        console.log("SPATIAL QUERY DATES:", dates);
+        console.log("SPATIAL QUERY DATE:", date);
     }
     // Set the bounding box on the query to be the coordinates fed in.
     // The coords needs to be array of size 4 with the following layout:
@@ -246,14 +246,25 @@ function spatialQueryWithDates(coordinates, dates, done){
         var s_range = coordinates.slice(0,2);
         var e_range = coordinates.slice(2,4);
 
-        s_range.push(dates[0]);
-        e_range.push(dates[1]);
+        // Push null and date onto start range (this order means get places with
+        // data that start before our desired day
+        s_range.push("null");
+        s_range.push(date/1000);
 
-        var query_params = {start_range: "[" + s_range.toString() + "]", end_range: "[" + e_range.toString() + "]"};
+        // Push date and null onto end range (this order means get data which end AFTER/ON
+        // our desired day.
+        e_range.push(date/1000);
+        e_range.push("null");
+
+        var query_params = {
+            start_range: "[" + s_range.toString() + "]",
+            end_range: "[" + e_range.toString() + "]",
+            inclusive_end: true
+        };
 
         console.log("QUERY CUSTOM PARAMS: " + JSON.stringify(query_params) );
         // Set the query with BBOX coordinates and limit of 30 results for testing
-        sQuery.custom(query_params).limit(500).stale(couchbase.SpatialQuery.Update.BEFORE);
+        sQuery.custom(query_params).limit(50).stale(couchbase.SpatialQuery.Update.BEFORE).i;
         queryDB.query(sQuery,function(err,result){
             if (err) {
                 console.log("ERR:",err);

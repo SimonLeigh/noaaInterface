@@ -32,8 +32,8 @@
         </div>
         <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
         <button class="btn btn-success" ng-click="refreshMap()">Show Me London!</button>
-        <button class="btn btn-success" ng-click="refreshMapCA()">Show Me Levi's!</button>
-        <button class="btn btn-success" ng-click="findEventsWithDate()">Get Events</button>
+        <button class="btn btn-success" ng-click="refreshMapCA()">Show Me SFO!</button>
+        <button class="btn btn-success" ng-click="findStationsWithDate()">Get Stations with Data</button>
         Show Map: <input type="checkbox" text="Show / Hide Map" ng-model="map.show">
     </div>
 
@@ -57,6 +57,8 @@
                         <p ng-non-bindable><b>Name</b>: {{data.value["Station Name"]}} </p>
                         <p ng-non-bindable><b>Long</b>: {{longitude}} </p>
                         <p ng-non-bindable><b>Lat</b>: {{latitude}} </p>
+                        <p ng-non-bindable><b>Dist. from Centre</b>: {{distance}} </p>
+
                     </div>
                 </ui-gmap-windows>
             </ui-gmap-markers>
@@ -132,22 +134,22 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>Event</th>
-                                <th>Venue</th>
-                                <th>Type</th>
-                                <th>Price</th>
-                                <th>When</th>
-                                <th>Transport</th>
+                                <th>Name</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
+                                <th>Elevation</th>
+                                <th>Data Begin</th>
+                                <th>Data End</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="row in rowCollection">
-                                <td>{{row.value.name}}</td>
-                                <td>{{row.value.venue}}</td>
-                                <td>{{row.value.type}}</td>
-                                <td>{{row.value.price}}</td>
-                                <td>{{row.value.showtimes}}</td>
-                                <td>{{row.value.transport}}</td>
+                                <td>{{row.value["Station Name"]}}</td>
+                                <td>{{row.value.Longitude}}</td>
+                                <td>{{row.value.Latitude}}</td>
+                                <td>{{row.value.Elevation}}</td>
+                                <td>{{row.value.Begin}}</td>
+                                <td>{{row.value.End}}</td>
                             </tr>
                             </tbody>
                         </table>

@@ -114,14 +114,14 @@ module.exports = function (app) {
     app.get('/api/events/findStationsWithDate',function(req,res) {
         if (req.query.ne_lat && req.query.ne_lon &&
             req.query.sw_lat && req.query.sw_lon &&
-            req.query.start && req.query.end) {
+            req.query.date) {
             // Construct the array expected by the spatial query
             var coords = [req.query.sw_lon, req.query.sw_lat,
                 req.query.ne_lon, req.query.ne_lat];
 
-            var dates = [req.query.start, req.query.end];
+            var date = req.query.date;
 
-            db.spatialQueryWithDates(coords, dates, function (err, done) {
+            db.spatialQueryWithDates(coords, date, function (err, done) {
                 if (err) {
                     res.status = 400;
                     res.send(err);

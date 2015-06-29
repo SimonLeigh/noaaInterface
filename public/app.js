@@ -38,8 +38,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
                 $scope.refreshMapCA = function () {
                     //optional param if you want to refresh you can pass null undefined or false or empty arg
-                    $scope.map.control.refresh({latitude: 37.4034, longitude: -121.9696});
-                    $scope.map.control.getGMap().setZoom(17);
+                    $scope.map.control.refresh({latitude: 37.5533, longitude: -122.3121});
+                    $scope.map.control.getGMap().setZoom(11);
 
                 };
 
@@ -181,6 +181,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                         icon: 'images/couchbase-circle-symbol.png',
                         latitude: latitude,
                         longitude: longitude,
+                        // Look up distance of point from centre of map.
+                        distance: getDistance(latitude,longitude),
                         title: row.value["Station Name"],
                         // We add on j here, to ensure unique ids for markers
                         id: row.id + j,
@@ -195,6 +197,28 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                     marker.showWindow = true;
                     $scope.$apply();
                     console.log("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+                };
+
+                // Computes the distance between two points
+                // Taken from https://jsperf.com/haversine-salvador/8
+                var getDistance = function (lat1, lon1) {
+                    var lat2 = $scope.map.center.latitude;
+                    var lon2 = $scope.map.center.longitude;
+                    var deg2rad = Math.PI / 180;
+                    lat1 *= deg2rad;
+                    lon1 *= deg2rad;
+                    lat2 *= deg2rad;
+                    lon2 *= deg2rad;
+                    var diam = 12742; // Diameter of the earth in km (2 * 6371)
+                    var dLat = lat2 - lat1;
+                    var dLon = lon2 - lon1;
+                    var a = (
+                            (1 - Math.cos(dLat)) +
+                            (1 - Math.cos(dLon)) * Math.cos(lat1) * Math.cos(lat2)
+                        ) / 2;
+
+
+                    return diam * Math.asin(Math.sqrt(a));
                 };
 
                 $scope.removeMarkers = function () {

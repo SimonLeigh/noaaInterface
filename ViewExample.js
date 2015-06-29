@@ -2,7 +2,7 @@
  * byLatLon
  * Created by simon on 29/06/15.
  */
-function (doc, meta) {
+var byLatLon = function (doc, meta) {
 
     if (doc.LAT && doc.LON && doc.BEGIN && doc.END) {
 
@@ -21,7 +21,7 @@ function (doc, meta) {
  * byLatLonDate
  * Created by simon on 29/06/15.
  */
-function (doc, meta) {
+var byLatLonDate = function (doc, meta) {
 
     if (doc.LAT && doc.LON && doc.BEGIN && doc.END) {
 
