@@ -90,19 +90,12 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                         if ($scope.dt == null || $scope.dt == undefined){
                             s_date = "null";
                         } else{
-                            // setHours for start to midnight (morning) on start range
+                            // setHours for start to midnight (evening) on start range
                             var t_date = $scope.dt.setHours(0,0,0,0);
                             console.log(t_date);
                             s_date = t_date;
                         };
 
-                        if ($scope.enddt == null || $scope.enddt == undefined){
-                            e_date = "null";
-                        } else{
-                            // setHours for end to almost midnight (evening) of end range.
-                            var te_date = $scope.enddt.setHours(23,59,0,0);
-                            e_date = te_date
-                        };
 
                         return $http.get("/api/events/findStationsWithDate", {
                             params: {
@@ -110,8 +103,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                                 ne_lon: $scope.map.bounds.northeast.longitude,
                                 sw_lat: $scope.map.bounds.southwest.latitude,
                                 sw_lon: $scope.map.bounds.southwest.longitude,
-                                start: s_date,
-                                end: e_date
+                                date: s_date
                             }
                         }).then(function (response) {
                             var markers = [];
