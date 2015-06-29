@@ -20,7 +20,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
     .controller("myAppCtrl", ['$scope','$timeout','$http','uiGmapGoogleMapApi'
         , function($scope, $timeout, $http, GoogleMapApi) {
-            $scope.rowCollection=[];
+            $scope.rowCollection = [];
+            $scope.stationData = null;
 
 
             // Do this here to ensure that the maps API is loaded before we do anything else
@@ -124,6 +125,29 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                     }
                 };
 
+                $scope.getMeasurement = function(id){
+
+                    //Build the key from station and date.
+                    var stationDate = String(id).substr(9,21) + "::" + $scope.dt.getFullYear() +
+                        '-' + ("0" + ($scope.dt.getMonth()+1)).slice(-2) + '-' + ("0" + $scope.dt.getDate()).slice(-2);
+
+                    console.log("Key to read: " + stationDate);
+                    return $http.get("/api/events/getOne", {
+
+                        params: {
+                            key:stationDate
+                        }
+
+                    }).then(function (response) {
+                        var markers = [];
+                        console.log(response);
+                        if (response.data.length > 0) {
+                            $scope.empty = false;
+                            $scope.stationData = response.data;
+                        }
+                    });
+                };
+
 /*                $scope.findStationsWithDate=function() {
                     if ($scope.map.bounds) {
                         $scope.rowCollection = [];
@@ -194,10 +218,14 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
                 var onMarkerClicked = function (marker) {
                     //TO DO: Get weather data for marker for last n days/ one year ago / each year for
+                    $scope.getMeasurement(marker.model.data.id);
                     marker.showWindow = true;
                     $scope.$apply();
-                    console.log("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+                    console.log(marker);
+                    console.log("Marker: lat: " + marker.model.latitude + ", lon: " + marker.model.longitude + " clicked!!")
                 };
+
+                $scope.onMarkerClicked = onMarkerClicked;
 
                 // Computes the distance between two points
                 // Taken from https://jsperf.com/haversine-salvador/8
