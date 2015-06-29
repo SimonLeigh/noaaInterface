@@ -6,28 +6,59 @@ var config = require('./../config');
 var couchbase = require('couchbase');
 var endPoint = config.couchbase.endPoint;
 var bucket = config.couchbase.bucket;
+var queryEndPoint = config.couchbase.queryEndPoint;
+var queryBucket = config.couchbase.queryBucket;
 var myCluster = new couchbase.Cluster(endPoint);
+var myQueryCluster = new couchbase.Cluster(queryEndPoint);
 //var myBucket = myCluster.openBucket(bucket);
 var db;
+var queryDB;
 var http=require('http');
 var request=require('request');
 var status="offline";  //offline,pending,online
 
 /**
- * 
+ *
  */
 function init(done) {
-    console.log({init: "check"});
+    console.log({init: "check data service"});
     request.get({
-                    url: "http://" + config.couchbase.n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces",
-                    auth: {
-                        'user': config.couchbase.user,
-                        'pass': config.couchbase.password,
-                        'sendImmediately': true
-                    }
-                }, function (err, response, body) {
+        url: "http://" + endPoint + "/pools/default/buckets/" + bucket,
+        auth: {
+            'user': config.couchbase.user,
+            'pass': config.couchbase.password,
+            'sendImmediately': true
+        }
+    }, function (err, responseB, bodyB) {
         if (err) {
-            console.log({init: "not ready"});
+            console.log({init: "data service not ready"});
+            if (config.application.verbose) {
+                console.log("VERBOSE:", err);
+            }
+            done(false);
+            return;
+        }
+        else {
+            var myBucket = myCluster.openBucket(bucket);
+            db = myBucket;
+            status = "online";
+            console.log({init: "data service ready"});
+            done(true);
+            return;
+        }
+    });
+
+    console.log({init: "check query service"});
+    request.get({
+        url: "http://" + config.couchbase.n1qlService + "/query?statement=SELECT+name+FROM+system%3Akeyspaces",
+        auth: {
+            'user': config.couchbase.user,
+            'pass': config.couchbase.password,
+            'sendImmediately': true
+        }
+    }, function (err, response, body) {
+        if (err) {
+            console.log({init: "query service not ready"});
             if (config.application.verbose) {
                 console.log("VERBOSE:", err);
             }
@@ -36,26 +67,26 @@ function init(done) {
         }
         if (response.statusCode == 200) {
             request.get({
-                            url: "http://" + endPoint + "/pools/default/buckets/" + bucket,
-                            auth: {
-                                'user': config.couchbase.user,
-                                'pass': config.couchbase.password,
-                                'sendImmediately': true
-                            }
-                        }, function (err, responseB, bodyB) {
+                url: "http://" + queryEndPoint + "/pools/default/buckets/" + queryBucket,
+                auth: {
+                    'user': config.couchbase.queryUser,
+                    'pass': config.couchbase.queryPassword,
+                    'sendImmediately': true
+                }
+            }, function (err, responseB, bodyB) {
                 if (err) {
-                    console.log({init: "not ready"});
+                    console.log({init: "query service not ready"});
                     if (config.application.verbose) {
                         console.log("VERBOSE:", err);
                     }
                     done(false);
                     return;
                 }
-                else{
-                    myBucket = myCluster.openBucket(bucket);
-                    db = myBucket;
+                else {
+                    var myQueryBucket = myQueryCluster.openBucket(queryBucket);
+                    queryDB = myQueryBucket;
                     status = "online";
-                    console.log({init: "ready"});
+                    console.log({init: "query service ready"});
                     done(true);
                     return;
                 }
@@ -63,7 +94,6 @@ function init(done) {
         }
     });
 }
-
 function enableN1QL(done){
     db.enableN1ql(config.couchbase.n1qlService);
     done({n1ql:"enabled"});
@@ -136,7 +166,7 @@ function query(sql,done){
         console.log("QUERY:",sql);
     }
     var query = N1qlQuery.fromString(sql);
-    db.query(query,function(err,result){
+    queryDB.query(query,function(err,result){
         if (err) {
             console.log("ERR:",err);
             done(err,null);
@@ -150,7 +180,7 @@ function query(sql,done){
 function spatialQuery(coordinates, done){
 
     // Set the query up to query the view with (designdoc, viewname)
-    var sQuery = couchbase.SpatialQuery.from("byLoc","byLatLon");
+    var sQuery = couchbase.SpatialQuery.from("spatial","byLatLon");
     if(config.couchbase.showQuery){
         console.log("SPATIAL QUERY COORDS:", coordinates);
     }
@@ -168,7 +198,7 @@ function spatialQuery(coordinates, done){
     else {
         // Set the query with BBOX coordinates and limit of 30 results for testing
         sQuery.bbox(coordinates).limit(500);
-        db.query(sQuery,function(err,result){
+        queryDB.query(sQuery,function(err,result){
             if (err) {
                 console.log("ERR:",err);
                 done(err,null);
@@ -224,7 +254,7 @@ function spatialQueryWithDates(coordinates, dates, done){
         console.log("QUERY CUSTOM PARAMS: " + JSON.stringify(query_params) );
         // Set the query with BBOX coordinates and limit of 30 results for testing
         sQuery.custom(query_params).limit(500).stale(couchbase.SpatialQuery.Update.BEFORE);
-        db.query(sQuery,function(err,result){
+        queryDB.query(sQuery,function(err,result){
             if (err) {
                 console.log("ERR:",err);
                 done(err,null);
@@ -264,6 +294,8 @@ function ops(done) {
 
 module.exports.endPoint=endPoint;
 module.exports.bucket=bucket;
+module.exports.queryBucket=queryBucket;
+module.exports.queryEndPoint=queryEndPoint;
 module.exports.init=init;
 module.exports.query=query;
 module.exports.spatialQuery = spatialQuery;
