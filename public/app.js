@@ -48,11 +48,11 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
                 };
 
-                $scope.findEvents=function() {
+                $scope.findStations=function() {
                     if ($scope.map.bounds) {
                         $scope.rowCollection = [];
                         $scope.map.eventMarkers = [];
-                        return $http.get("/api/events/findEvents", {
+                        return $http.get("/api/events/findStations", {
                             params: {
                                 ne_lat: $scope.map.bounds.northeast.latitude,
                                 ne_lon: $scope.map.bounds.northeast.longitude,
@@ -78,7 +78,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                     }
                 };
 
-                $scope.findEventsWithDate=function() {
+                $scope.findStationsWithDate=function() {
                     if ($scope.map.bounds) {
                         $scope.rowCollection = [];
                         $scope.map.eventMarkers = [];
@@ -104,7 +104,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                             e_date = te_date
                         };
 
-                        return $http.get("/api/events/findEventsWithDate", {
+                        return $http.get("/api/events/findStationsWithDate", {
                             params: {
                                 ne_lat: $scope.map.bounds.northeast.latitude,
                                 ne_lon: $scope.map.bounds.northeast.longitude,
@@ -132,7 +132,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                     }
                 };
 
-/*                $scope.findEventsWithDate=function() {
+/*                $scope.findStationsWithDate=function() {
                     if ($scope.map.bounds) {
                         $scope.rowCollection = [];
                         $scope.map.eventMarkers = [];
@@ -234,7 +234,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                             dragend: function () {
                                 $timeout(function () {
                                     var markers = [];
-                                    $scope.findEvents();
+                                    $scope.findStations();
                                 });
                             }
                         },

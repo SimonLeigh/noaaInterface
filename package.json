@@ -1,9 +1,9 @@
 {
-  "name": "cb-connect-geo",
+  "name": "cb-NoaaInterface",
   "private": true,
   "version": "0.0.0",
-  "description": "Geospatial Querying Demonstration with Couchbase, Express, Angular.js and node.js",
-  "repository": "https://github.com/SimonLeigh/cb-connect-geo",
+  "description": "NOAA Querying Demonstration with Couchbase, Express, Angular.js and node.js",
+  "repository": "https://github.com/SimonLeigh/noaaInterface",
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.6.1",

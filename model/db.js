@@ -222,7 +222,7 @@ function spatialQuery(coordinates, done){
 function spatialQueryWithDates(coordinates, dates, done){
 
     // Set the query up to query the view with (designdoc, viewname)
-    var sQuery = couchbase.SpatialQuery.from("byLoc","byLatLonDate");
+    var sQuery = couchbase.SpatialQuery.from("spatial","byLatLonDate");
     if(config.couchbase.showQuery){
         console.log("SPATIAL QUERY COORDS:", coordinates);
         console.log("SPATIAL QUERY DATES:", dates);

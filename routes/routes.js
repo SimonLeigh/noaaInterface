@@ -88,7 +88,7 @@ module.exports = function (app) {
     });
 
     //// ▶▶ Event Spatial Query ◀◀ ////
-    app.get('/api/events/findEvents',function(req,res) {
+    app.get('/api/events/findStations',function(req,res) {
         if (req.query.ne_lat && req.query.ne_lon &&
             req.query.sw_lat && req.query.sw_lon) {
             // Construct the array expected by the spatial query
@@ -111,7 +111,7 @@ module.exports = function (app) {
     });
 
     //// ▶▶ Event Spatial Query With Date ◀◀ ////
-    app.get('/api/events/findEventsWithDate',function(req,res) {
+    app.get('/api/events/findStationsWithDate',function(req,res) {
         if (req.query.ne_lat && req.query.ne_lon &&
             req.query.sw_lat && req.query.sw_lon &&
             req.query.start && req.query.end) {

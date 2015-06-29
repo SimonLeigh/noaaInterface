@@ -2,7 +2,7 @@
 <html xmlns:ng="http://angularjs.org" id='ng-app' ng-app="myApp">
 <head>
     <meta charset="utf-8">
-    <title>Couchbase 4.0 GeoSpatial Demo</title>
+    <title>NOAA Dataset Demo</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
@@ -22,7 +22,7 @@
 
     <div class="row">
         <div class="page-title">
-            <h2>GeoSpatial Querying with Couchbase Server 4.0</h2>
+            <h2>NOAA Historical Weather Data Demo</h2>
             <div class="panel-header panel-primary"><small> © 2015 Couchbase.com  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Powered
                 by:&nbsp;&nbsp;&nbsp;</small> <img src="/images/logoCouchbase.png"/>&nbsp;&nbsp;&nbsp;&nbsp;<img
                     src="/images/logoNode.png"/>&nbsp;&nbsp;&nbsp;&nbsp;<img
@@ -68,12 +68,6 @@
                     <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.dt" is-open="$parent.opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-                </p>
-                <p class="input-group">
-                    <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.enddt" is-open="$parent.opened1" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open1($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
                 </p>
         </div>
@@ -171,7 +165,7 @@
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
 -->
-<script src='bower_components/lodash/dist/lodash.underscore.js'></script>
+<script src='bower_components/lodash/lodash.js'></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src='bower_components/angular-google-maps/dist/angular-google-maps.js'></script>
 <!--

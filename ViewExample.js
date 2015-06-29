@@ -1,67 +1,39 @@
 /**
  * byLatLon
- * Created by simon on 29/05/15.
+ * Created by simon on 29/06/15.
  */
 function (doc, meta) {
 
-    if (doc.latitude && doc.longitude && doc.type && doc.name && doc.type=='Events') {
+    if (doc.LAT && doc.LON && doc.BEGIN && doc.END) {
 
-        if (doc.eventShowtimes){
+        var latitude = parseFloat(doc.LAT);
+        var longitude = parseFloat(doc.LON);
 
-            doc.eventShowtimes.forEach(function (time) {
-                var geojson = {};
-
-                geojson.type = "Point";
-                geojson.coordinates = [doc.longitude, doc.latitude];
-
-                var longDate = Date.parse(time);
-
-                emit([geojson, longDate]
-                    , {
-                        "name": doc.name,
-                        "type": doc.type,
-                        "price": doc.price,
-                        "transport": doc.transportInfo,
-                        "venue": doc.venue.name,
-                        "showtimes": time.substring(0,10) + " " + time.substring(11,19),
-                        "annotation": doc.annotation
-                    }
-                );
-            });
+        if (!isNaN(latitude) && !isNaN(longitude)){
+            /* Construct date by slicing out individual d/m/y */
+            emit([longitude, latitude], doc["STATION NAME"]);
         }
+
     }
 }
 
 /**
  * byLatLonDate
- * Created by simon on 29/05/15.
+ * Created by simon on 29/06/15.
  */
 function (doc, meta) {
 
-    if (doc.latitude && doc.longitude && doc.type && doc.name && doc.type=='Events') {
+    if (doc.LAT && doc.LON && doc.BEGIN && doc.END) {
 
-        if (doc.eventShowtimes){
+        var latitude = parseFloat(doc.LAT);
+        var longitude = parseFloat(doc.LON);
 
-            doc.eventShowtimes.forEach(function (time) {
-                var geojson = {};
-
-                geojson.type = "Point";
-                geojson.coordinates = [doc.longitude, doc.latitude];
-
-                var longDate = Date.parse(time);
-
-                emit([geojson, longDate]
-                    , {
-                        "name": doc.name,
-                        "type": doc.type,
-                        "price": doc.price,
-                        "transport": doc.transportInfo,
-                        "venue": doc.venue.name,
-                        "showtimes": time.substring(0,10) + " " + time.substring(11,19),
-                        "annotation": doc.annotation
-                    }
-                );
-
+        if (!isNaN(latitude) && !isNaN(longitude)){
+            /* Construct date by slicing out individual d/m/y */
+            var begin = Date.UTC(doc.BEGIN.slice(0,4), doc.BEGIN.slice(4,6)-1, doc.BEGIN.slice(6,8))/1000
+            var end = Date.UTC(doc.END.slice(0,4), doc.END.slice(4,6)-1, doc.END.slice(6,8))/1000
+            emit([longitude, latitude,begin,end], doc["STATION NAME"]);
         }
+
     }
 }
