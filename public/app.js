@@ -189,7 +189,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                         icon: 'images/couchbase-circle-symbol.png',
                         latitude: latitude,
                         longitude: longitude,
-                        title: row.value.name,
+                        title: row.value["Station Name"],
                         // We add on j here, to ensure unique ids for markers
                         id: row.id + j,
                         data: row
@@ -199,9 +199,10 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                 };
 
                 var onMarkerClicked = function (marker) {
+                    //TO DO: Get weather data for marker for last n days/ one year ago / each year for
                     marker.showWindow = true;
                     $scope.$apply();
-                    window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+                    console.log("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
                 };
 
                 $scope.removeMarkers = function () {
