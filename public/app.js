@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
+angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
     .config(['uiGmapGoogleMapApiProvider'
         , function(GoogleMapApi) {
             GoogleMapApi.configure({
@@ -229,6 +229,9 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
                 $scope.removeMarkers = function () {
                     $scope.map.eventMarkers = [];
+                    $scope.samplesEmpty = true;
+                    $scope.statsEmpty = true;
+                    $scope.empty = true;
                 };
 
                 angular.extend($scope, {

@@ -13,6 +13,7 @@
     "angular": "latest",
     "angular-google-maps": "latest",
     "html5-boilerplate": "~4.3.0",
-    "lodash": "latest"
+    "lodash": "latest",
+    "angular-nvd3":"latest"
   }
 }
