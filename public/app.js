@@ -20,8 +20,24 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
     .controller("myAppCtrl", ['$scope','$timeout','$http','uiGmapGoogleMapApi'
         , function($scope, $timeout, $http, GoogleMapApi) {
+
+            var nullMeasurements = {
+                "TEMP": null,
+                "VSB": null,
+                "SPD": null
+            };
+
             $scope.rowCollection = [];
+            $scope.samplesEmpty = true;
+            $scope.statsEmpty = true;
             $scope.stationData = null;
+            $scope.stationSamples = [];
+            $scope.dayStats = {
+                "average": nullMeasurements,
+                "max": nullMeasurements,
+                "min": nullMeasurements
+            }
+
 
 
             // Do this here to ensure that the maps API is loaded before we do anything else
@@ -139,62 +155,22 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                         }
 
                     }).then(function (response) {
-                        var markers = [];
                         console.log(response);
-                        if (response.data.length > 0) {
-                            $scope.empty = false;
+                        if (response.status == 200 && response.data) {
+                            $scope.stationSamples = [];
+                            $scope.stationData = null;
+                            $scope.averageTemp = null;
+
+                            $scope.samplesEmpty = false;
+                            $scope.statsEmpty = false;
                             $scope.stationData = response.data;
+                            $scope.stationSamples = response.data.value.samples
+                            $scope.dayStats = getStats($scope.stationSamples);
+
                         }
                     });
                 };
 
-/*                $scope.findStationsWithDate=function() {
-                    if ($scope.map.bounds) {
-                        $scope.rowCollection = [];
-                        $scope.map.eventMarkers = [];
-
-                        var s_range = [];
-                        var e_range = [];
-
-                        // Create our start and end ranges
-                        s_range.push($scope.map.bounds.southwest.longitude);
-                        s_range.push($scope.map.bounds.southwest.latitude);
-                        s_range.push(Date.parse($scope.dt)/1000);
-
-                        e_range.push($scope.map.bounds.northeast.longitude);
-                        e_range.push($scope.map.bounds.northeast.latitude);
-                        e_range.push(Date.parse($scope.enddt)/1000);
-
-
-                        return $http.get("http://192.168.109.101:8092/CouchPlaces/_design/byLoc/_spatial/byLatLonDate", {
-                            params: {
-                                start_range: "[" + s_range.toString() + "]",
-                                end_range: "[" + e_range.toString() + "]",
-                                stale: false,
-                                connect_timeout: 60000,
-                                limit: 500,
-                                skip: 0},
-                            headers: {
-                                'Content-Type': 'application/json; charset=utf-8'
-                                                       }
-                        }).success(function (res) {
-                            console.log(res);
-                            var markers = [];
-                            if (res.rows.length > 0) {
-                                $scope.empty = false;
-                            }
-                            for (var j = 0; j < res.rows.length; j++) {
-                                $scope.rowCollection.push(res.rows[j]);
-                                markers.push(
-                                    createMarkerFromRow(res.rows[j],j)
-                                );
-                            }
-                            if (!$scope.empty) {
-                                $scope.map.eventMarkers = markers;
-                            }
-                        });
-                    }
-                };*/
 
                 var createMarkerFromRow = function (row, j) {
 
@@ -221,7 +197,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                     $scope.getMeasurement(marker.model.data.id);
                     marker.showWindow = true;
                     $scope.$apply();
-                    console.log(marker);
+                    //console.log(marker);
                     console.log("Marker: lat: " + marker.model.latitude + ", lon: " + marker.model.longitude + " clicked!!")
                 };
 
@@ -279,7 +255,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                             dragend: function () {
                                 $timeout(function () {
                                     var markers = [];
-                                    $scope.findStations();
+                                    $scope.findStationsWithDate();
                                 });
                             }
                         },
@@ -292,6 +268,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                         onMarkerClicked(marker);
                     };
                     marker.closeClick = function () {
+                        $scope.samplesEmpty = true;
                         marker.showWindow = false;
                         $scope.$evalAsync();
                     };
@@ -378,6 +355,87 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
             //// ▶▶ Jquery inside Angular ◀◀ ////
             $('.input-daterange').datepicker({"todayHighlight": true, "autoclose":true,"startDate":"+0d"});
+
+            var getAverages = function(array, mTypes){
+
+                var avJson = {};
+
+                for (var j=0; j < mTypes.length; j++){
+                    var measurement = mTypes[j];
+                    // Variable to store count of missing entries
+                    var blankCount = 0;
+                    var sum = 0;
+
+                    for (var i = 0; i < array.length; i++) {
+                        //Iterate array taking value from each element
+                        var entry = parseInt(array[i][measurement], 10);
+                        if (!isNaN(entry)) {
+                            sum += entry;
+                        }
+                        else {
+                            ++blankCount;
+                        }
+                    }
+
+                    avJson[measurement] =  Math.round((sum / (array.length - blankCount))*1000)/1000;
+                }
+
+                return avJson;
+            }
+
+            var getMaxes = function(array, mTypes){
+
+                var maxJson = {};
+
+                for (var j=0; j < mTypes.length; j++){
+                    var measurement = mTypes[j];
+                    var max = Number.MIN_VALUE;
+
+                    for (var i = 0; i < array.length; i++) {
+                        //Iterate array taking value from each element
+                        var entry = parseInt(array[i][measurement], 10);
+                        if (!isNaN(entry)) {
+                            max = max >= entry ? max : entry;
+                        }
+                    }
+                    
+                    maxJson[measurement] = Math.round(max*1000)/1000;
+                }
+                
+                return maxJson;
+            }
+
+            var getMins = function(array, mTypes){
+                var minJson = {};
+
+                for (var j=0; j < mTypes.length; j++){
+                    var measurement = mTypes[j];
+
+                    var min = Number.MAX_VALUE;
+
+                    for (var i = 0; i < array.length; i++) {
+                        //Iterate array taking value from each element
+                        var entry = parseInt(array[i][measurement], 10);
+                        if (!isNaN(entry)) {
+                            min = min < entry ? min : entry;
+                        }
+                    }
+
+                    minJson[measurement] = Math.round(min*1000)/1000;
+                }
+
+                return minJson;
+            }
+
+            var getStats = function(array){
+                var jsonStats = {};
+                var measurementTypes = ["TEMP","SPD","VSB"]
+                jsonStats.averages = getAverages(array, measurementTypes)
+                jsonStats.max = getMaxes(array, measurementTypes)
+                jsonStats.min = getMins(array, measurementTypes)
+
+                return jsonStats;
+            }
 
         }
     ]);

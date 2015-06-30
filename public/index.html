@@ -65,12 +65,12 @@
 
         </ui-gmap-google-map>
         <div class="col-md-4" id="datepickers">
-                <p class="input-group">
-                    <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.dt" is-open="$parent.opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+            <p class="input-group">
+                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.dt" is-open="$parent.opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
-                </p>
+            </p>
         </div>
         <div class="col-md-4" id="statsElem">
             <fieldset>
@@ -104,62 +104,106 @@
                 </table>
             </fieldset>
         </div>
-        <!--<div class="col-md-4">
-            <form class="form-horizontal" role="form" name="dateForm" ng-submit="findEventsByDate()" novalidate>
-                <div class="form-group" ng-class="{ 'has-error' : dateForm.start.$invalid && !dateForm.start.$pristine}">
-                    <label class="col-sm-3 control-label">Event Dates</label>
-                    <div class="col-md-4">
-                        <div class="input-daterange" id="datepicker">
-                            <div class="input-group">
-                                <span class="input-group-addon">Start</span>
-                                <input type="text" class="input-small form-control" name="start"
-                                       ng-model="start" placeholder="enter a start date" />
-                                <span class="input-group-addon" id="endSpan">End</span>
-                                <input type="text" class="input-small form-control" id="endDate" name="end"
-                                       ng-model="end" placeholder="enter an end date"/>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Averages where available -->
+        <div class="col-md-4">
+        <div class="panel panel-primary" id="stats-table" ng-show="!statsEmpty">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Stats for Station</h3>
                 </div>
-            </form>
-        </div>-->
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary" id="event-table" ng-show="!empty">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Events in Area</h3>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Longitude</th>
-                                <th>Latitude</th>
-                                <th>Elevation</th>
-                                <th>Data Begin</th>
-                                <th>Data End</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="row in rowCollection">
-                                <td>{{row.value["Station Name"]}}</td>
-                                <td>{{row.value.Longitude}}</td>
-                                <td>{{row.value.Latitude}}</td>
-                                <td>{{row.value.Elevation}}</td>
-                                <td>{{row.value.Begin}}</td>
-                                <td>{{row.value.End}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="panel-footer">
-                    </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Stat</th>
+                            <th>Temp</th>
+                            <th>Wind Speed</th>
+                            <th>Vis</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="(key, values) in dayStats">
+                            <td>{{key}}</td>
+                            <td ng-repeat="val in values">{{val}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
                 </div>
             </div>
         </div>
     </div>
+
+
+    <div class="row">
+
+        <div class="col-md-8">
+            <div class="panel panel-primary" id="station-table" ng-show="!empty">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Stations in Area</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Longitude</th>
+                            <th>Latitude</th>
+                            <th>Elevation</th>
+                            <th>Data Begin</th>
+                            <th>Data End</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="row in rowCollection">
+                            <td>{{row.value["Station Name"]}}</td>
+                            <td>{{row.value.Longitude}}</td>
+                            <td>{{row.value.Latitude}}</td>
+                            <td>{{row.value.Elevation}}</td>
+                            <td>{{row.value.Begin}}</td>
+                            <td>{{row.value.End}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-primary" id="samples-table" ng-show="!samplesEmpty">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Samples for Station</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Wind Speed</th>
+                            <th>Wind Direction</th>
+                            <th>Temp</th>
+                            <th>Vis</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="sample in stationSamples">
+                            <td>{{sample.TIME}}</td>
+                            <td>{{sample.SPD}}</td>
+                            <td>{{sample.DIR}}</td>
+                            <td>{{sample.TEMP}}</td>
+                            <td>{{sample.VSB}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
