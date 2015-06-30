@@ -26,17 +26,18 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
                 "VSB": null,
                 "SPD": null
             };
+            var nullStats = {
+                "average": nullMeasurements,
+                "max": nullMeasurements,
+                "min": nullMeasurements
+            };
 
             $scope.rowCollection = [];
             $scope.samplesEmpty = true;
             $scope.statsEmpty = true;
             $scope.stationData = null;
             $scope.stationSamples = [];
-            $scope.dayStats = {
-                "average": nullMeasurements,
-                "max": nullMeasurements,
-                "min": nullMeasurements
-            }
+            $scope.dayStats = nullStats;
 
 
 
@@ -194,6 +195,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap'])
 
                 var onMarkerClicked = function (marker) {
                     //TO DO: Get weather data for marker for last n days/ one year ago / each year for
+                    $scope.dayStats = nullStats;
                     $scope.getMeasurement(marker.model.data.id);
                     marker.showWindow = true;
                     $scope.$apply();
