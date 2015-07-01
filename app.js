@@ -10,6 +10,7 @@ require('./routes/routes')(app);
 
 
 app.listen(config.application.httpPort);
+console.log("Listening on http://localhost:3001")
 
 //// ▶▶ uncaught exception - DEBUG only ◀◀ ////
 /*

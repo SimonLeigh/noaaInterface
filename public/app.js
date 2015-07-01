@@ -40,6 +40,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
             $scope.dayStats = nullStats;
 
             /* Chart options */
+            // TODO: Fix the scaling on the y axis when plotting two bars
             $scope.d3Options = { /* JSON data */
                 "chart": {
                     "type": "multiChart",
