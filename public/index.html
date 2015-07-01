@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="bower_components/nvd3/nv.d3.css">
     <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
-<body ng-controller="myAppCtrl">
+<body>
 
-<div class="container" id="containerElem">
+<div class="container" id="containerElem" ng-controller="myAppCtrl">
 
     <div class="row">
         <div class="page-title">
@@ -65,9 +65,9 @@
             </ui-gmap-markers>
 
         </ui-gmap-google-map>
-        <div class="col-md-4" id="datepickers">
+        <div class="col-md-4">
             <p class="input-group">
-                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.dt" is-open="$parent.opened" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+                <input type="text" id="input-daterange" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.dt" is-open="$parent.opened" datepicker-options="$parent.dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -107,7 +107,7 @@
         </div>
         <!-- Averages where available -->
         <div class="col-md-4">
-        <div class="panel panel-primary" id="stats-table" ng-show="!statsEmpty">
+            <div class="panel panel-primary" id="stats-table" ng-show="!statsEmpty">
                 <div class="panel-heading">
                     <h3 class="panel-title">Stats for Station</h3>
                 </div>
@@ -133,10 +133,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-8">
+            <nvd3 options="d3Options" data="d3Data"></nvd3>
+        </div>
     </div>
 
 
     <div class="row">
+
+
+
 
         <div class="col-md-8">
             <div class="panel panel-primary" id="station-table" ng-show="!empty">
@@ -206,6 +213,7 @@
     </div>
 
 </div>
+
 
 
 <!-- In production use:
