@@ -41,32 +41,41 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
             /* Chart options */
             $scope.d3Options = { /* JSON data */
-                    "chart": {
-                        "type": "multiChart",
-                        "height": 350,
-                        "margin": {
-                            "top": 20,
-                            "right": 45,
-                            "bottom": 60,
-                            "left": 45
-                        },
-                        "clipEdge": true,
-                        "staggerLabels": false,
-                        "transitionDuration": 500,
-                        "stacked": false,
-                        "xAxis": {
-                            "axisLabel": "Time",
-                            "showMaxMin": false
-                        },
-                        "yAxis1": {
-                            "axisLabel": "Degrees F, MPH, Miles",
-                            "axisLabelDistance": 40
-                        },
-                        "yAxis2": {
-                            "axisLabel": "mB",
-                            "axisLabelDistance": 40
-                        }
-                }};
+                "chart": {
+                    "type": "multiChart",
+                    "height": 350,
+                    "margin": {
+                        "top": 20,
+                        "right": 45,
+                        "bottom": 60,
+                        "left": 45
+                    },
+                    "clipEdge": true,
+                    "staggerLabels": false,
+                    "transitionDuration": 500,
+                    "stacked": false,
+                    "xAxis": {
+                        "axisLabel": "Time",
+                        "showMaxMin": false
+                    },
+                    "yAxis1": {
+                        "axisLabel": "Degrees F, MPH, Miles",
+                        "axisLabelDistance": 40
+                    },
+                    "yAxis2": {
+                        "axisLabel": "mB",
+                        "axisLabelDistance": 40
+                    }},
+                "title": {
+                    "enable": true,
+                    "text": "Awaiting Data",
+                    "className": "h4",
+                    "css": {
+                        "width": "nullpx",
+                        "textAlign": "center"
+                    }
+                }
+            };
             /* Chart data */
             $scope.d3Data = []
 
@@ -202,6 +211,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                             $scope.dayStats = getStats($scope.stationSamples);
                             // Make the graph data
                             $scope.d3Data = getGraphData($scope.stationSamples);
+                            // Update Title
+                            $scope.d3Options.title.text = "Data for " + stationDate + ".";
 
                         }
                     });
@@ -490,7 +501,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 // Set up which keys we are interested in
                 var graphValues = {};
                 var graphArray = [];
-                var keys = ["TEMP", "SPD", "STP", "VSB"];
+                var keys = ["TEMP", "SPD", "STP"];
 
                 for (var i=0;i <keys.length;i++){
                     //Put empty arrays in graphValues
@@ -502,8 +513,14 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
                     for (var j = 0; j < keys.length; j++) {
                         //Push data onto values list
-                        graphValues[keys[j]].push({x: array[i]["TIME"],
-                                                    y: array[i][keys[j]]})
+                        var data = array[i][keys[j]];
+                        // Check if data exists for point.
+                        if (data) {
+                            graphValues[keys[j]].push({
+                                x: array[i]["TIME"],
+                                y: data
+                            })
+                        }
                     }
                 }
 
