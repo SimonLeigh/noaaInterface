@@ -39,6 +39,37 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
             $scope.stationSamples = [];
             $scope.dayStats = nullStats;
 
+            /* Chart options */
+            $scope.d3Options = { /* JSON data */
+                    "chart": {
+                        "type": "multiChart",
+                        "height": 350,
+                        "margin": {
+                            "top": 20,
+                            "right": 45,
+                            "bottom": 60,
+                            "left": 45
+                        },
+                        "clipEdge": true,
+                        "staggerLabels": false,
+                        "transitionDuration": 500,
+                        "stacked": false,
+                        "xAxis": {
+                            "axisLabel": "Time",
+                            "showMaxMin": false
+                        },
+                        "yAxis1": {
+                            "axisLabel": "Degrees F, MPH, Miles",
+                            "axisLabelDistance": 40
+                        },
+                        "yAxis2": {
+                            "axisLabel": "mB",
+                            "axisLabelDistance": 40
+                        }
+                }};
+            /* Chart data */
+            $scope.d3Data = []
+
 
 
             // Do this here to ensure that the maps API is loaded before we do anything else
@@ -165,8 +196,12 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                             $scope.samplesEmpty = false;
                             $scope.statsEmpty = false;
                             $scope.stationData = response.data;
-                            $scope.stationSamples = response.data.value.samples
+                            $scope.stationSamples = response.data.value.samples;
+
+                            // Compute average stats
                             $scope.dayStats = getStats($scope.stationSamples);
+                            // Make the graph data
+                            $scope.d3Data = getGraphData($scope.stationSamples);
 
                         }
                     });
@@ -318,7 +353,9 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 };
                 $scope.dateOptions = {
                     formatYear: 'yy',
-                    startingDay: 1
+                    startingDay: 1,
+                    "defaultViewDate": {"year": 2015, "month":5, "day": 3}
+
                 };
 
                 $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
@@ -359,7 +396,10 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
             });
 
             //// ▶▶ Jquery inside Angular ◀◀ ////
-            $('.input-daterange').datepicker({"todayHighlight": true, "autoclose":true,"startDate":"+0d"});
+            $('.input-daterange').datepicker({"todayHighlight": true,
+                "autoclose":true,
+                "defaultViewDate": {"year": 2015, "month":5, "day": 3}
+            });
 
             var getAverages = function(array, mTypes){
 
@@ -442,6 +482,44 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 return jsonStats;
             }
 
+            var getGraphData = function(array){
+                //Graph Data has to look like
+                // [ { key, values:[x,y] }, {key2, values2:[x,y]}..]
+                // Our input array is samples for that day.
+
+                // Set up which keys we are interested in
+                var graphValues = {};
+                var graphArray = [];
+                var keys = ["TEMP", "SPD", "STP", "VSB"];
+
+                for (var i=0;i <keys.length;i++){
+                    //Put empty arrays in graphValues
+                    graphValues[keys[i]] = [];
+                }
+
+                // Go through input array gathering data
+                for (var i=0; i<array.length; i++) {
+
+                    for (var j = 0; j < keys.length; j++) {
+                        //Push data onto values list
+                        graphValues[keys[j]].push({x: array[i]["TIME"],
+                                                    y: array[i][keys[j]]})
+                    }
+                }
+
+                for (var i=0; i< keys.length; i++){
+                    graphArray.push({key:keys[i],
+                                    values: graphValues[keys[i]],
+                                    yAxis: keys[i] != "STP" ? 1 : 2,
+                                    type: "bar"
+                    });
+                }
+
+                return graphArray;
+
+            }
+
         }
     ]);
+
 
