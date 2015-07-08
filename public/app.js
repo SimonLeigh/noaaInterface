@@ -55,10 +55,18 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     "staggerLabels": false,
                     "transitionDuration": 500,
                     "stacked": false,
+                    "yDomain1":[-10,100],
+                    "showXAxis":true,
                     "xAxis": {
                         "axisLabel": "Time",
                         "showMaxMin": false
                     },
+                    /*,
+                    "yAxis":{
+                        "axisLabel": "Degrees F, MPH, Miles",
+                        "axisLabelDistance": 40
+                    }
+                    */
                     "yAxis1": {
                         "axisLabel": "Degrees F, MPH, Miles",
                         "axisLabelDistance": 40
@@ -66,7 +74,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     "yAxis2": {
                         "axisLabel": "mB",
                         "axisLabelDistance": 40
-                    }},
+                    }
+                },
                 "title": {
                     "enable": true,
                     "text": "Awaiting Data",
@@ -502,7 +511,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 // Set up which keys we are interested in
                 var graphValues = {};
                 var graphArray = [];
-                var keys = ["TEMP", "SPD", "STP"];
+                var keys = ["TEMP", "SPD", "VSB", "STP"];
 
                 for (var i=0;i <keys.length;i++){
                     //Put empty arrays in graphValues
