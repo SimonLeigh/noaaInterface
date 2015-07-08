@@ -55,7 +55,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     "staggerLabels": false,
                     "transitionDuration": 500,
                     "stacked": false,
-                    "yDomain1":[-10,100],
+                    "yDomain2":[-10,100],
                     "showXAxis":true,
                     "xAxis": {
                         "axisLabel": "Time",
@@ -537,7 +537,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 for (var i=0; i< keys.length; i++){
                     graphArray.push({key:keys[i],
                                     values: graphValues[keys[i]],
-                                    yAxis: keys[i] != "STP" ? 1 : 2,
+                                    yAxis: keys[i] != "STP" ? 2 : 1,
                                     type: "bar"
                     });
                 }
