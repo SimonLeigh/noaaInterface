@@ -92,7 +92,7 @@ module.exports = function (app) {
         if (req.query.keys) {
             console.log(req.query.keys);
             // Split keys into an actual array
-            var keyArray = req.query.keys.split(",");
+            var keyArray = req.query.keys;
             db.multiRead(keyArray, function (err, done) {
                 if (err) {
                     res.status = 400;

@@ -142,7 +142,7 @@ function read(key, done) {
 function multiRead(keys, done) {
         db.getMulti(keys, function (err, result) {
             if (err) {
-                console.log("DB.MULTIREAD:", err);
+                console.log("DB.MULTIREAD MISS KEY:", err);
                 done(err, result);
                 return;
             }

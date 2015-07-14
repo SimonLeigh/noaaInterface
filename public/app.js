@@ -195,14 +195,23 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 $scope.getMeasurement = function(id){
 
                     //Build the key from station and date.
-                    var stationDate = String(id).substr(9,21) + "::" + $scope.dt.getFullYear() +
-                        '-' + ("0" + ($scope.dt.getMonth()+1)).slice(-2) + '-' + ("0" + $scope.dt.getDate()).slice(-2);
+                    var stationID = String(id).substr(9,21);
+                    var year = $scope.dt.getFullYear();
+                    var month = ("0" + ($scope.dt.getMonth()+1)).slice(-2);
+                    var day = ("0" + $scope.dt.getDate()).slice(-2);
 
-                    console.log("Key to read: " + stationDate);
-                    return $http.get("/api/events/getOne", {
+                    var stationDates = [];
+
+                    // Push last 5 years keys onto dates array
+                    for (var i = 0; i <=5; i++) {
+                        stationDates.push(stationID + "::" + (year-i) + '-' + month + '-' + day);
+                    }
+
+                    console.log("Key to read: " + stationDates);
+                    return $http.get("/api/events/getSamples", {
 
                         params: {
-                            key:stationDate
+                            keys:stationDates
                         }
 
                     }).then(function (response) {
@@ -214,15 +223,16 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
                             $scope.samplesEmpty = false;
                             $scope.statsEmpty = false;
-                            $scope.stationData = response.data;
-                            $scope.stationSamples = response.data.value.samples;
+                            // Get data for actual date.
+                            $scope.stationData = response.data[stationDates[0]];
+                            $scope.stationSamples = response.data[stationDates[0]].value.samples;
 
                             // Compute average stats
                             $scope.dayStats = getStats($scope.stationSamples);
                             // Make the graph data
                             $scope.d3Data = getGraphData($scope.stationSamples);
                             // Update Title
-                            $scope.d3Options.title.text = "Data for " + stationDate + ".";
+                            $scope.d3Options.title.text = "Data for " + stationDates[0] + ".";
 
                         }
                     });
