@@ -137,7 +137,10 @@
         </div>
 
         <div class="col-md-8">
-            <nvd3 options="d3Options" data="d3Data"></nvd3>
+            <div ng-repeat="item in d3Data | orderBy:'title':true" ng-show="!samplesEmpty">
+                <h2>{{item.title}}</h2>
+                <nvd3 options="d3Options" data="item.data" title="test"></nvd3>
+            </div>
         </div>
     </div>
 

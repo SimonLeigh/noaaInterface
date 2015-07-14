@@ -38,6 +38,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
             $scope.stationData = null;
             $scope.stationSamples = [];
             $scope.dayStats = nullStats;
+            $scope.graphTitles = [];
 
             /* Chart options */
             // TODO: Fix the scaling on the y axis when plotting two bars
@@ -75,7 +76,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                         "axisLabel": "mB",
                         "axisLabelDistance": 40
                     }
-                },
+                }/*,
                 "title": {
                     "enable": true,
                     "text": "Awaiting Data",
@@ -84,7 +85,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                         "width": "nullpx",
                         "textAlign": "center"
                     }
-                }
+                }*/
             };
             /* Chart data */
             $scope.d3Data = []
@@ -201,6 +202,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     var day = ("0" + $scope.dt.getDate()).slice(-2);
 
                     var stationDates = [];
+                    // Reset titles
+                    $scope.graphTitles = [];
 
                     // Push last 5 years keys onto dates array
                     for (var i = 0; i <=5; i++) {
@@ -230,9 +233,12 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                             // Compute average stats
                             $scope.dayStats = getStats($scope.stationSamples);
                             // Make the graph data
-                            $scope.d3Data = getGraphData($scope.stationSamples);
-                            // Update Title
-                            $scope.d3Options.title.text = "Data for " + stationDates[0] + ".";
+                            $scope.d3Data = getGraphData(response);
+                            // Update Titles
+                            for (var k in response.data){
+                                $scope.graphTitles.push(k)
+                            }
+                            //$scope.d3Options.title.text = "Data for " + stationDates[0] + ".";
 
                         }
                     });
@@ -513,50 +519,78 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 return jsonStats;
             }
 
-            var getGraphData = function(array){
-                //Graph Data has to look like
-                // [ { key, values:[x,y] }, {key2, values2:[x,y]}..]
-                // Our input array is samples for that day.
+            var getGraphData = function(multiGetResponse){
 
-                // Set up which keys we are interested in
-                var graphValues = {};
+                // Array stores current values
+                var currentArray = [];
+                // Array stores key/value pairs for one graph
                 var graphArray = [];
+                // Array stores multiple k/v pairs for multiple graphs
+                var multiGraphData=[];
+
+                var graphValues = {};
+                // Set up which keys we are interested in
                 var keys = ["TEMP", "SPD", "VSB", "STP"];
 
-                for (var i=0;i <keys.length;i++){
-                    //Put empty arrays in graphValues
-                    graphValues[keys[i]] = [];
-                }
+                // Iterate the responses
+                for (var k in multiGetResponse.data){
+                    // check if there's an error for this key
+                    if(!multiGetResponse.data[k].error) {
 
-                // Go through input array gathering data
-                for (var i=0; i<array.length; i++) {
+                        currentArray = [];
+                        currentArray = multiGetResponse.data[k].value.samples
 
-                    for (var j = 0; j < keys.length; j++) {
-                        //Push data onto values list
-                        var data = array[i][keys[j]];
-                        // Check if data exists for point.
-                        if (data) {
-                            graphValues[keys[j]].push({
-                                x: array[i]["TIME"],
-                                y: data
-                            })
+                        //Graph Data has to look like
+                        // [ { key, values:[x,y] }, {key2, values2:[x,y]}..]
+                        // Our input array is samples for that day.
+
+                        graphValues = {};
+                        graphArray = [];
+
+                        for (var i=0;i <keys.length;i++){
+                            //Put empty arrays in graphValues
+                            graphValues[keys[i]] = [];
                         }
+
+                        // Go through input array gathering data
+                        for (var i=0; i<currentArray.length; i++) {
+
+                            for (var j = 0; j < keys.length; j++) {
+                                //Push data onto values list
+                                var data = currentArray[i][keys[j]];
+                                // Check if data exists for point.
+                                if (data) {
+                                    graphValues[keys[j]].push({
+                                        x: currentArray[i]["TIME"],
+                                        y: data
+                                    })
+                                }
+                            }
+                        }
+
+                        for (var i=0; i< keys.length; i++){
+                            graphArray.push({key:keys[i],
+                                values: graphValues[keys[i]],
+                                yAxis: keys[i] != "STP" ? 2 : 1,
+                                type: "bar"
+                            });
+                        }
+
+                         multiGraphData.push({ "title": k, "data": graphArray});
                     }
                 }
 
-                for (var i=0; i< keys.length; i++){
-                    graphArray.push({key:keys[i],
-                                    values: graphValues[keys[i]],
-                                    yAxis: keys[i] != "STP" ? 2 : 1,
-                                    type: "bar"
-                    });
-                }
-
-                return graphArray;
-
+                return multiGraphData;
             }
 
         }
-    ]);
+    ])
+
+    .filter('toArray', function() { return function(obj) {
+    if (!(obj instanceof Object)) return obj;
+    return _.map(obj, function(val, key) {
+        return Object.defineProperty(val, '$key', {__proto__: null, value: key});
+    });
+}});
 
 
