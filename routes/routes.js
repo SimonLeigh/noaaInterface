@@ -87,6 +87,29 @@ module.exports = function (app) {
 
     });
 
+    app.get('/api/events/getSamples', function(req,res) {
+
+        if (req.query.keys) {
+            console.log(req.query.keys);
+            // Split keys into an actual array
+            var keyArray = req.query.keys.split(",");
+            db.multiRead(keyArray, function (err, done) {
+                if (err) {
+                    res.status = 400;
+                    res.send(done);
+                    return;
+                }
+                res.status = 202;
+                res.send(done);
+            });
+        }else{
+            res.status = 400;
+            res.send({"Event":"Error finding keys"});
+            return;
+        }
+
+    });
+
     //// ▶▶ Event Spatial Query ◀◀ ////
     app.get('/api/events/findStations',function(req,res) {
         if (req.query.ne_lat && req.query.ne_lon &&

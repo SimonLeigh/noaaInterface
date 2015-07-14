@@ -136,6 +136,23 @@ function read(key, done) {
 
 /**
  *
+ * @param keys
+ * @param done
+ */
+function multiRead(keys, done) {
+        db.getMulti(keys, function (err, result) {
+            if (err) {
+                console.log("DB.MULTIREAD:", err);
+                done(err, result);
+                return;
+            }
+            done(null, result);
+        });
+}
+
+
+/**
+ *
  * @param key
  * @param done
  */
@@ -314,3 +331,4 @@ module.exports.spatialQueryWithDates = spatialQueryWithDates;
 module.exports.ops=ops;
 module.exports.read=read;
 module.exports.upsert=upsert;
+module.exports.multiRead=multiRead;
