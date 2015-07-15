@@ -228,12 +228,19 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                             $scope.statsEmpty = false;
                             // Get data for actual date.
                             $scope.stationData = response.data[stationDates[0]];
-                            $scope.stationSamples = response.data[stationDates[0]].value.samples;
+                            
+                            if ($scope.stationData.error){
+                                $scope.d3Data = [];
+                            }
+                            else{
+                                $scope.stationSamples = response.data[stationDates[0]].value.samples;
+                                // Compute average stats
+                                $scope.dayStats = getStats($scope.stationSamples);
+                                // Make the graph data
+                                $scope.d3Data = getGraphData(response);
+                            }
 
-                            // Compute average stats
-                            $scope.dayStats = getStats($scope.stationSamples);
-                            // Make the graph data
-                            $scope.d3Data = getGraphData(response);
+
                             // Update Titles
                             for (var k in response.data){
                                 $scope.graphTitles.push(k)
