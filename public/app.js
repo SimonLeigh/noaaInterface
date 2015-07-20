@@ -2,8 +2,7 @@
 
 // Declare app level module which depends on views, and components
 angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
-    .config(['uiGmapGoogleMapApiProvider'
-        , function(GoogleMapApi) {
+    .config(['uiGmapGoogleMapApiProvider', function(GoogleMapApi) {
             GoogleMapApi.configure({
                 key: 'AIzaSyDxhBvEAPgJNWhR-UbnDEusPT29neQkV0k',
                 v: '3.17',
@@ -18,8 +17,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
 
 
-    .controller("myAppCtrl", ['$scope','$timeout','$http','uiGmapGoogleMapApi'
-        , function($scope, $timeout, $http, GoogleMapApi) {
+    .controller("myAppCtrl", ['$scope','$timeout','$http', 'uiGmapGoogleMapApi',
+        function($scope, $timeout, $http, GoogleMapApi) {
 
             var nullMeasurements = {
                 "TEMP": null,
@@ -88,7 +87,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 }*/
             };
             /* Chart data */
-            $scope.d3Data = []
+            $scope.d3Data = [];
 
 
 
@@ -103,7 +102,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     $scope.map.control.refresh({latitude: 51.5227, longitude: -0.0845});
                     $scope.map.control.getGMap().setZoom(16);
 
-                }
+                };
 
                 $scope.refreshMapCA = function () {
                     //optional param if you want to refresh you can pass null undefined or false or empty arg
@@ -154,16 +153,15 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
                         // Here we check if we have an undefined date, which is OK.
                         var s_date;
-                        var e_date;
 
-                        if ($scope.dt == null || $scope.dt == undefined){
+                        if ($scope.dt === null || $scope.dt === undefined){
                             s_date = "null";
                         } else{
                             // setHours for start to midnight (evening) on start range
                             var t_date = $scope.dt.setHours(0,0,0,0);
                             console.log(t_date);
                             s_date = t_date;
-                        };
+                        }
 
 
                         return $http.get("/api/events/findStationsWithDate", {
@@ -219,7 +217,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
                     }).then(function (response) {
                         console.log(response);
-                        if (response.status == 200 && response.data) {
+                        if (response.status === 200 && response.data) {
                             $scope.stationSamples = [];
                             $scope.stationData = null;
                             $scope.averageTemp = null;
@@ -228,7 +226,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                             $scope.statsEmpty = false;
                             // Get data for actual date.
                             $scope.stationData = response.data[stationDates[0]];
-                            
+
                             if ($scope.stationData.error){
                                 $scope.d3Data = [];
                             }
@@ -243,7 +241,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
 
                             // Update Titles
                             for (var k in response.data){
-                                $scope.graphTitles.push(k)
+                                $scope.graphTitles.push(k);
                             }
                             //$scope.d3Options.title.text = "Data for " + stationDates[0] + ".";
 
@@ -279,7 +277,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     marker.showWindow = true;
                     $scope.$apply();
                     //console.log(marker);
-                    console.log("Marker: lat: " + marker.model.latitude + ", lon: " + marker.model.longitude + " clicked!!")
+                    console.log("Marker: lat: " + marker.model.latitude + ", lon: " + marker.model.longitude + " clicked!!");
                 };
 
                 $scope.onMarkerClicked = onMarkerClicked;
@@ -470,7 +468,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 }
 
                 return avJson;
-            }
+            };
 
             var getMaxes = function(array, mTypes){
 
@@ -492,7 +490,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 }
                 
                 return maxJson;
-            }
+            };
 
             var getMins = function(array, mTypes){
                 var minJson = {};
@@ -514,17 +512,17 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                 }
 
                 return minJson;
-            }
+            };
 
             var getStats = function(array){
                 var jsonStats = {};
-                var measurementTypes = ["TEMP","SPD","VSB"]
-                jsonStats.averages = getAverages(array, measurementTypes)
-                jsonStats.max = getMaxes(array, measurementTypes)
-                jsonStats.min = getMins(array, measurementTypes)
+                var measurementTypes = ["TEMP","SPD","VSB"];
+                jsonStats.averages = getAverages(array, measurementTypes);
+                jsonStats.max = getMaxes(array, measurementTypes);
+                jsonStats.min = getMins(array, measurementTypes);
 
                 return jsonStats;
-            }
+            };
 
             var getGraphData = function(multiGetResponse){
 
@@ -545,7 +543,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                     if(!multiGetResponse.data[k].error) {
 
                         currentArray = [];
-                        currentArray = multiGetResponse.data[k].value.samples
+                        currentArray = multiGetResponse.data[k].value.samples;
 
                         //Graph Data has to look like
                         // [ { key, values:[x,y] }, {key2, values2:[x,y]}..]
@@ -570,7 +568,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                                     graphValues[keys[j]].push({
                                         x: currentArray[i]["TIME"],
                                         y: data
-                                    })
+                                    });
                                 }
                             }
                         }
@@ -578,7 +576,7 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
                         for (var i=0; i< keys.length; i++){
                             graphArray.push({key:keys[i],
                                 values: graphValues[keys[i]],
-                                yAxis: keys[i] != "STP" ? 2 : 1,
+                                yAxis: keys[i] !== "STP" ? 2 : 1,
                                 type: "bar"
                             });
                         }
@@ -598,6 +596,8 @@ angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
     return _.map(obj, function(val, key) {
         return Object.defineProperty(val, '$key', {__proto__: null, value: key});
     });
-}});
+    };
+    }
+);
 
 
