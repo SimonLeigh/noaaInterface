@@ -18,7 +18,8 @@ var byLatLon = function (doc, meta) {
 }
 
 /**
- * byLatLonDate
+ * designdoc: spatial
+ * viewname: byLatLonDate
  * Created by simon on 29/06/15.
  */
 function (doc, meta) {
