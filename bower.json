@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "angular": "latest",
-    "angular-google-maps": "latest",
+    "angular-google-maps": "2.1.5",
     "html5-boilerplate": "~4.3.0",
     "lodash": "latest",
     "angular-nvd3":"latest",
