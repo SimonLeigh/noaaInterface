@@ -1,9 +1,9 @@
 {
   "couchbase":{
-    "endPoint":"instance-10924.bigstep.io:8091",
-    "queryEndPoint":"instance-10924.bigstep.io:8091",
-    "n1qlService":"instance-10924.bigstep.io:8093",
-    "hostName":"instance-10924.bigstep.io",
+    "endPoint":"noaa1.no-ip.org:8091",
+    "queryEndPoint":"noaa1.no-ip.org:8091",
+    "n1qlService":"noaa1.no-ip.org:8093",
+    "hostName":"noaa1.no-ip.org",
     "bucket":"noaa",
     "queryBucket":"stations",
     "user":"Administrator",
