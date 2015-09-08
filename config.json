@@ -1,9 +1,9 @@
 {
   "couchbase":{
-    "endPoint":"ec2-52-18-77-16.eu-west-1.compute.amazonaws.com:8091",
-    "queryEndPoint":"ec2-52-18-77-16.eu-west-1.compute.amazonaws.com:8091",
-    "n1qlService":"ec2-52-18-77-16.eu-west-1.compute.amazonaws.com:8093",
-    "hostName":"ec2-52-18-77-16.eu-west-1.compute.amazonaws.com",
+    "endPoint":"instance-10924.bigstep.io:8091",
+    "queryEndPoint":"instance-10924.bigstep.io:8091",
+    "n1qlService":"instance-10924.bigstep.io:8093",
+    "hostName":"instance-10924.bigstep.io",
     "bucket":"noaa",
     "queryBucket":"stations",
     "user":"Administrator",

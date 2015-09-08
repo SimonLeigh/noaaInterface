@@ -4,7 +4,7 @@
 angular.module('myApp', ['uiGmapgoogle-maps','ui.bootstrap','nvd3'])
     .config(['uiGmapGoogleMapApiProvider', function(GoogleMapApi) {
             GoogleMapApi.configure({
-                key: 'AIzaSyDxhBvEAPgJNWhR-UbnDEusPT29neQkV0k',
+                key: 'AIzaSyD0Sg8-e6H4uSk3kW6LZ4vp6PXoMo0ZnBU',
                 v: '3.17',
                 libraries: 'weather,geometry,visualization'
             });
